@@ -10,3 +10,6 @@ Arkanoid Remake for Study project
 - andere Eigenschaften (MiniGames)
 - unterschiedliche Maps (Röhre wie bei Flipper um in anderen Mapteil zu gelangen)
 - Bossgegner (beweglich, HP-Anzeige, Minispiel-Kampf)
+
+
+ich schau nur, wie ich alles hier bearbeiten kann etc
