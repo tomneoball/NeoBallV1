@@ -8,24 +8,13 @@
 #include "Ball.h"
 #include "Brick.h"
 
-struct Particle {
-    float x, y;
-    float velX, velY;
-    float life;
-    Color color;
-};
-
-struct PowerUp {
-    SDL_FRect rect;
-    PowerUpType type;
-    bool active;
-};
+struct Particle { float x, y; float velX, velY; float life; Color color; };
+struct PowerUp { SDL_FRect rect; PowerUpType type; bool active; };
 
 class Game {
 public:
     Game();
     ~Game();
-
     bool init(const char* title);
     void run();
 
@@ -34,37 +23,44 @@ private:
     void update(float deltaTime);
     void render();
 
-    // Management
     void loadSettings();
     void saveSettings();
     void changeResolution(int w, int h);
+    void updateScaleFactor();
 
-    // Highscore System
-    void loadHighscore();
-    void saveHighscore();
-
-    // Rendering States
     void renderMenu();
     void renderSettings();
     void renderLevelComplete();
-    void renderShop();
     void renderGameOver();
 
-    // UI Helpers
     bool drawButton(float x, float y, float w, float h, const char* text);
     void drawText(const char* text, float x, float y, float scale, Color c);
     void drawChar(char c, float x, float y, float scale, Color color);
     void drawNumber(int number, float x, float y, float scale);
 
-    // Resources
+    // 3D Helpers
+    SDL_FPoint transform3D(float x, float y);
+    SDL_FPoint transform3DWithHeight(float x, float y, float zHeight);
+
+    // NEU: Spezialisierte Render-Funktionen fÃ¼r die Formen
+    void renderBrickRect3D(SDL_Texture* tex, SDL_FRect rect, Color c);
+    void renderBrickTriangle3D(SDL_Texture* tex, SDL_FRect rect, Color c);
+    void renderBrickPenta3D(SDL_Texture* tex, SDL_FRect rect, Color c);
+
+    void renderBillboard(SDL_Texture* tex, float x, float y, float w, float h, Color c);
+    void renderArena3D();
+    void drawQuad(SDL_FPoint p1, SDL_FPoint p2, SDL_FPoint p3, SDL_FPoint p4, Color c);
+
     void loadTextures();
     SDL_Texture* loadTexture(const char* file);
 
-    // Gameplay
     void resetBall();
     void nextLevel();
     void loadLevel(int levelIndex);
-    void createBrick(float x, float y, int type);
+
+    // createBrick angepasst fÃ¼r Shape
+    void createBrick(float x, float y, int type, BrickShape shape);
+
     void spawnParticles(float x, float y, Color c);
     void trySpawnItem(float x, float y);
 
@@ -75,22 +71,21 @@ private:
 
     int winWidth = 800;
     int winHeight = 600;
-
     float scaleFactor = 1.0f;
+    float arenaTopBoundary = 0.0f;
 
     SDL_Texture* texBg = nullptr;
     SDL_Texture* texPaddle = nullptr;
     SDL_Texture* texBall = nullptr;
-    SDL_Texture* texPilot = nullptr;
     SDL_Texture* texBrickWood = nullptr;
     SDL_Texture* texBrickStone = nullptr;
     SDL_Texture* texBrickGold = nullptr;
     SDL_Texture* texBrickGreen = nullptr;
     SDL_Texture* texItemPower = nullptr;
     SDL_Texture* texItemPoint = nullptr;
+    SDL_Texture* texWhitePixel = nullptr;
 
     Paddle* paddle = nullptr;
-
     std::vector<Ball> balls;
     std::vector<Brick> bricks;
     std::vector<Particle> particles;
@@ -101,18 +96,9 @@ private:
     int lives;
     bool ballStuckToPaddle;
     GameState gameState;
-
     int score;
     int highScore;
     int currentLevelIndex;
-
-    // NEU: Währung für den Shop
-    int collectedCoins = 0;
-
-    // Upgrade Flags
-    bool upgradeWidePaddle = false;
-    bool upgradeFireball = false;
-
     float mouseX = 0;
     float mouseY = 0;
     bool mousePressed = false;
