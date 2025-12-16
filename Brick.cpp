@@ -1,7 +1,7 @@
 #include "Brick.h"
 
-Brick::Brick(float x, float y, int hp, int t, Color c, float scale)
-    : health(hp), type(t), color(c), active(true), zOffset(0.0f) {
+Brick::Brick(float x, float y, int hp, int t, BrickShape s, Color c, float scale)
+    : health(hp), type(t), shape(s), color(c), active(true), zOffset(0.0f) {
 
     // Basisgröße 60x30 skalieren
     rect = { x, y, 60.0f * scale, 30.0f * scale };
