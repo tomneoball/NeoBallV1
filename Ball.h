@@ -1,105 +1,40 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include <vector>
-#include <string>
-#include <fstream>
-#include "Structs.h"
-#include "Paddle.h"
-#include "Ball.h"
-#include "Brick.h"
 
-struct Particle { float x, y; float velX, velY; float life; Color color; };
-struct PowerUp { SDL_FRect rect; PowerUpType type; bool active; };
-
-class Game {
+class Ball {
 public:
-    Game();
-    ~Game();
-    bool init(const char* title);
-    void run();
+    Ball(float x, float y, float vx, float vy, float scale);
+
+    // Update mit topLimit für die Arena
+    void update(float dt, int winW, int winH, float topLimit);
+
+    // --- GETTER & SETTER (Diese haben gefehlt und verursachten C2039) ---
+    float getVelX() const { return velX; }
+    float getVelY() const { return velY; }
+
+    void setVelX(float vx) { velX = vx; }
+    void setVelY(float vy) { velY = vy; }
+
+    // Setzt beides gleichzeitig
+    void setVelocity(float vx, float vy) { velX = vx; velY = vy; }
+
+    // Position setzen (für Reset oder Sticky)
+    void setPosition(float x, float y) { rect.x = x; rect.y = y; }
+
+    // Richtung umkehren
+    void invertY() { velY *= -1; }
+    void invertX() { velX *= -1; }
+
+    // Status Abfragen
+    SDL_FRect getRect() const { return rect; }
+    bool isActive() const { return active; }
+
+    bool isFire() const { return isFireball; }
+    void setFireball(bool f) { isFireball = f; }
 
 private:
-    void processEvents();
-    void update(float deltaTime);
-    void render();
-
-    void loadSettings();
-    void saveSettings();
-    void changeResolution(int w, int h);
-    void updateScaleFactor();
-
-    void renderMenu();
-    void renderSettings();
-    void renderLevelComplete();
-    void renderGameOver();
-
-    bool drawButton(float x, float y, float w, float h, const char* text);
-    void drawText(const char* text, float x, float y, float scale, Color c);
-    void drawChar(char c, float x, float y, float scale, Color color);
-    void drawNumber(int number, float x, float y, float scale);
-
-    // 3D Helpers
-    SDL_FPoint transform3D(float x, float y);
-    SDL_FPoint transform3DWithHeight(float x, float y, float zHeight);
-
-    // NEU: Spezialisierte Render-Funktionen für die Formen
-    void renderBrickRect3D(SDL_Texture* tex, SDL_FRect rect, Color c);
-    void renderBrickTriangle3D(SDL_Texture* tex, SDL_FRect rect, Color c);
-    void renderBrickPenta3D(SDL_Texture* tex, SDL_FRect rect, Color c);
-
-    void renderBillboard(SDL_Texture* tex, float x, float y, float w, float h, Color c);
-    void renderArena3D();
-    void drawQuad(SDL_FPoint p1, SDL_FPoint p2, SDL_FPoint p3, SDL_FPoint p4, Color c);
-
-    void loadTextures();
-    SDL_Texture* loadTexture(const char* file);
-
-    void resetBall();
-    void nextLevel();
-    void loadLevel(int levelIndex);
-
-    // createBrick angepasst für Shape
-    void createBrick(float x, float y, int type, BrickShape shape);
-
-    void spawnParticles(float x, float y, Color c);
-    void trySpawnItem(float x, float y);
-
-    SDL_Window* window = nullptr;
-    SDL_Renderer* renderer = nullptr;
-    bool isRunning = false;
-    Uint64 lastTime = 0;
-
-    int winWidth = 800;
-    int winHeight = 600;
-    float scaleFactor = 1.0f;
-    float arenaTopBoundary = 0.0f;
-
-    SDL_Texture* texBg = nullptr;
-    SDL_Texture* texPaddle = nullptr;
-    SDL_Texture* texBall = nullptr;
-    SDL_Texture* texBrickWood = nullptr;
-    SDL_Texture* texBrickStone = nullptr;
-    SDL_Texture* texBrickGold = nullptr;
-    SDL_Texture* texBrickGreen = nullptr;
-    SDL_Texture* texItemPower = nullptr;
-    SDL_Texture* texItemPoint = nullptr;
-    SDL_Texture* texWhitePixel = nullptr;
-
-    Paddle* paddle = nullptr;
-    std::vector<Ball> balls;
-    std::vector<Brick> bricks;
-    std::vector<Particle> particles;
-    std::vector<PowerUp> powerups;
-    std::vector<PointItem> pointItems;
-
-    float shakeTime = 0.0f;
-    int lives;
-    bool ballStuckToPaddle;
-    GameState gameState;
-    int score;
-    int highScore;
-    int currentLevelIndex;
-    float mouseX = 0;
-    float mouseY = 0;
-    bool mousePressed = false;
+    SDL_FRect rect;
+    float velX, velY;
+    bool active;
+    bool isFireball;
 };
